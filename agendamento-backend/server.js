@@ -2,8 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const chalk = require("chalk");
 
-const app = express(); // Declare 'app' antes de utilizá-lo
+const app = express();
 
 // Middlewares
 app.use(cors());
@@ -18,14 +19,17 @@ app.use("/api/agendamentos", agendamentoRoutes);
 
 // Conexão com o banco de dados
 mongoose
-.   connect(process.env.MONGO_URI)
+    .connect(process.env.MONGO_URI)
     .then(() => {
-    console.log("Conectado ao MongoDB");
-    // Inicia o servidor após a conexão com o banco de dados
+    console.log(chalk.green.bold("✅ Conectado ao MongoDB"));
     app.listen(process.env.PORT || 5000, () => {
-    console.log(`Servidor rodando na porta ${process.env.PORT || 5000}`);
+        console.log(
+        chalk.blueBright.bold(
+            `🚀 Servidor rodando na porta ${process.env.PORT || 5000}`
+        )
+    );
     });
-})
-.catch((err) => {
-    console.error("Erro de conexão com o MongoDB:", err);
+    })
+    .catch((err) => {
+    console.error(chalk.red.bold("❌ Erro de conexão com o MongoDB:"), err);
 });
