@@ -29,3 +29,5 @@ mongoose
 .catch((err) => {
     console.error("Erro de conexão com o MongoDB:", err);
 });
+// Exporta o app para testes
+module.exports = app; 
