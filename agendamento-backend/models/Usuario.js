@@ -1,16 +1,39 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
-const UsuarioSchema = new mongoose.Schema({
-    nome: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    senha: { type: String, required: true },
-    tipo: { type: String, enum: ['cliente', 'profissional'], required: true }
+const usuarioSchema = new mongoose.Schema({
+  nome: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  senha: {
+    type: String,
+    required: true
+  },
+  tipo: {
+    type: String,
+    required: true
+  }
 });
 
-// Método para comparar senhas
-UsuarioSchema.methods.compararSenha = function (senhaDigitada) {
-return bcrypt.compare(senhaDigitada, this.senha);
+// Método para comparar a senha
+usuarioSchema.methods.compararSenha = function (senha) {
+  return bcrypt.compare(senha, this.senha);
 };
 
-module.exports = mongoose.model('Usuario', UsuarioSchema);
+// Pre-save para criptografar a senha antes de salvar no banco de dados
+usuarioSchema.pre("save", async function (next) {
+  if (this.isModified("senha")) {
+    this.senha = await bcrypt.hash(this.senha, 10);
+  }
+  next();
+});
+
+const Usuario = mongoose.model("Usuario", usuarioSchema);
+
+module.exports = Usuario;

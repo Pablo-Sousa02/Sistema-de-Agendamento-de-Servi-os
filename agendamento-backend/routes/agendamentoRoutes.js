@@ -1,28 +1,27 @@
-const express= require('express');
+const express = require('express');
+const router = express.Router();
+const Agendamento = require('../models/Agendamento'); // Certifique-se de que o caminho esteja correto
 
+// Rota para criar um agendamento
+router.post('/', (req, res) => {
+    const { cliente, profissional, data, observacoes } = req.body;
 
-const router= express.Router();
-const Agendamento= require('../models/Agendamento');
-router.post('/', async (req, res) => {
-    try{
-        const novoAgendamento= new Agendamento(req.body);
-        await novoAgendamento.save();
-        res.status(201).json(novoAgendamento);
-    } catch (error) {
-        console.error(error);
-        res.status(400).json({message: 'Erro ao criar agendamento'});
-    }   
-}
-);
-router.get('/', async (req, res) => {
-    try {
-        const agendamentos = await Agendamento.find();
-        res.json(agendamentos);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Erro ao buscar agendamentos' });
-    }
+    const novoAgendamento = new Agendamento({
+        cliente,
+        profissional,
+        data,
+        observacoes
+    });
+
+    // Salvando o agendamento no banco de dados
+    novoAgendamento.save()
+        .then(agendamento => {
+            res.status(201).json(agendamento);
+        })
+        .catch(err => {
+            res.status(400).json({ error: err.message });
+        });
 });
 
-
-module.exports= router;
+// Exportando as rotas para o arquivo principal
+module.exports = router;
