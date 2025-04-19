@@ -1,37 +1,18 @@
-    const express = require('express');
-    const router = express.Router();
-    const Agendamento = require('../models/Agendamento'); // Certifique-se de que o caminho esteja correto
+const express = require('express');
+const router = express.Router();
+const agendamentoController = require('../controllers/agendamentoController');
+const usuarioController = require('../controllers/usuarioController'); // <- Corrigido aqui
 
-    // Rota para criar um agendamento
-    router.post('/', (req, res) => {
-        const { cliente, profissional, data, observacoes } = req.body;
+// Rota para cadastrar agendamento
+router.post('/cadastrar', agendamentoController.cadastrarAgendamento);
 
-        const novoAgendamento = new Agendamento({
-            cliente,
-            profissional,
-            data,
-            observacoes
-        });
+// Rota para buscar todos os agendamentos
+router.get('/', agendamentoController.buscarAgendamentos);
 
-        // Salvando o agendamento no banco de dados
-        novoAgendamento.save()
-            .then(agendamento => {
-                res.status(201).json(agendamento);
-            })
-            .catch(err => {
-                res.status(400).json({ error: err.message });
-            });
-    });
+// Rota para excluir agendamento
+router.delete('/:id', agendamentoController.excluirAgendamento);
 
-    router.delete("/:id", async (req, res) => {
-        try {
-        const { id } = req.params;
-        await Agendamento.findByIdAndDelete(id);
-        res.status(200).json({ mensagem: "Agendamento excluído com sucesso" });
-        } catch (error) {
-        res.status(500).json({ mensagem: "Erro ao excluir agendamento" });
-        }
-    });
+// Rota para buscar agendamentos por profissional
+router.get('/profissionais', usuarioController.buscarProfissionais);
 
-    // Exportando as rotas para o arquivo principal
-    module.exports = router;
+module.exports = router;

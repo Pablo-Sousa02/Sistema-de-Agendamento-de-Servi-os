@@ -1,34 +1,30 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Login from './components/Login';
-import Cadastro from './components/Cadastro';
-import Agendamento from './components/Agendamentos.js';
-import MeusAgendamentos from './components/MeusAgendamentos';
-import { Container, Navbar, Nav } from 'react-bootstrap';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import NavigationBar from './components/NavigationBar';
+
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Cadastro from './pages/Cadastro';
+import Agendamentos from './pages/Agendamentos';
+import MeusAgendamentos from './pages/MeusAgendamentos';
+import EditarPerfil from './pages/EditarPerfil';
+
 
 function App() {
   return (
-    <Router>
-      <Navbar bg="dark" variant="dark" expand="lg">
-        <Container>
-          <Navbar.Brand href="/">Sistema de Agendamento</Navbar.Brand>
-          <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">Login</Nav.Link>
-            <Nav.Link as={Link} to="/cadastro">Cadastro</Nav.Link>
-            <Nav.Link as={Link} to="/agendamento">Agendar</Nav.Link>
-            <Nav.Link as={Link} to="/meus-agendamentos">Meus Agendamentos</Nav.Link>
-          </Nav>
-        </Container>
-      </Navbar>
-
-      <Container className="mt-4">
+    <AuthProvider>
+      <Router>
+        <NavigationBar />
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
-          <Route path="/agendamento" element={<Agendamento />} />
+          <Route path="/agendamentos" element={<Agendamentos />} />
           <Route path="/meus-agendamentos" element={<MeusAgendamentos />} />
+          <Route path="/editar-perfil" element={<EditarPerfil />} />
         </Routes>
-      </Container>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 
