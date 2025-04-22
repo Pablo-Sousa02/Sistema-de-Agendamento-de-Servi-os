@@ -1,5 +1,7 @@
 const Usuario = require('../models/Usuario');
 const jwt = require('jsonwebtoken');
+const { cadastrarAgendamento } = require('./agendamentoController');
+const agendamentos = require('../routes/agendamentos');
 
 // Função para login
 const login = async (req, res) => {
@@ -9,11 +11,13 @@ const login = async (req, res) => {
     console.log('Senha recebida:', senha);
 
     try {
+        // Encontrar o usuário pelo email
         const usuario = await Usuario.findOne({ email });
         if (!usuario) {
             return res.status(400).json({ mensagem: "Usuário não encontrado" });
         }
 
+        // Comparar a senha recebida com a senha do usuário
         const senhaCorreta = await usuario.compararSenha(senha);
         console.log("Senha comparada com sucesso:", senhaCorreta);
 
@@ -21,18 +25,30 @@ const login = async (req, res) => {
             return res.status(400).json({ mensagem: "Senha incorreta" });
         }
 
+        // Gerar o token JWT
         const token = jwt.sign(
             { id: usuario._id, tipo: usuario.tipo },
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" }
+            process.env.JWT_SECRET, // Certifique-se de que o JWT_SECRET está configurado no .env
+            { expiresIn: "1h" }  // O token expira em 1 hora
         );
 
-        res.json({ token, usuario: { id: usuario._id, nome: usuario.nome, email: usuario.email, tipo: usuario.tipo } });
+        // Retornar o token e informações do usuário
+        console.log('Token gerado:', token);
+        return res.json({
+            token,
+            usuario: {
+                id: usuario._id,
+                nome: usuario.nome,
+                email: usuario.email,
+                tipo: usuario.tipo
+            }
+        });
     } catch (error) {
         console.error("Erro no login:", error.message);
         res.status(500).json({ mensagem: "Erro no servidor" });
     }
 };
+
 
 // Função para cadastro
 const cadastrar = async (req, res) => {

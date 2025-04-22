@@ -11,10 +11,11 @@ app.use(cors({
   origin: 'http://localhost:3000' // Altere para o endereço do seu frontend
 }));
 
-
 // Rotas
 const usuarioRoutes = require("./routes/usuarioRoutes");
+const agendamentoRoutes = require("./routes/agendamentoRoutes"); // Adicione esta linha
 app.use("/api/usuarios", usuarioRoutes);
+app.use('/api/agendamentos', agendamentoRoutes); // Certifique-se de que as rotas de agendamento estão sendo usadas corretamente
 
 // Conexão com o banco de dados e inicialização do servidor
 const PORT = process.env.PORT || 5000;

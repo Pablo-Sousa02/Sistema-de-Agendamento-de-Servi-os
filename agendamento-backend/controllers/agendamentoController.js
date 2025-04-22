@@ -1,53 +1,75 @@
 const Agendamento = require('../models/Agendamento');
-const Usuario = require('../models/Usuario');
 
-exports.cadastrarAgendamento = async (req, res) => {
+// Função para criar agendamento
+const criarAgendamento = async (req, res) => {
     try {
-        const { clienteId, profissionalId, data, hora, servico } = req.body;
-
-        const novoAgendamento = new Agendamento({
-            clienteId,
-            profissionalId,
+        const { cliente, servico, data, hora, profissional } = req.body;
+        const agendamento = new Agendamento({
+            cliente,
+            servico,
             data,
             hora,
-            servico
+            profissional
         });
 
-        await novoAgendamento.save();
-        res.status(201).json({ mensagem: "Agendamento realizado com sucesso" });
+        await agendamento.save();
+        res.status(201).json({ mensagem: 'Agendamento criado com sucesso', agendamento });
     } catch (error) {
-        console.error("Erro ao cadastrar agendamento:", error);
-        res.status(500).json({ mensagem: "Erro ao cadastrar agendamento" });
+        console.error('Erro ao criar agendamento:', error);
+        res.status(500).json({ mensagem: 'Erro ao criar agendamento.' });
     }
 };
 
-exports.buscarAgendamentosPorProfissional = async (req, res) => {
+// Função para listar os agendamentos do cliente logado
+const listarMeusAgendamentos = async (req, res) => {
     try {
-        const profissionalId = req.params.profissionalId;
-        const agendamentos = await Agendamento.find({ profissionalId }).populate('clienteId', 'nome email');
-        res.json(agendamentos);
+        const clienteId = req.userId;
+
+        const agendamentos = await Agendamento.find({ cliente: clienteId })
+            .populate('profissional', 'nome')
+            .sort({ data: 1, hora: 1 });
+
+        const lista = agendamentos.map(agendamento => ({
+            _id: agendamento._id,
+            profissionalNome: agendamento.profissional ? agendamento.profissional.nome : 'Profissional não encontrado',
+            servico: agendamento.servico,
+            data: new Date(agendamento.data).toLocaleDateString(),
+            hora: agendamento.hora
+        }));
+
+        res.json(lista);
     } catch (error) {
-        console.error("Erro ao buscar agendamentos:", error);
-        res.status(500).json({ mensagem: "Erro ao buscar agendamentos" });
+        console.error('Erro ao listar agendamentos:', error);
+        res.status(500).json({ mensagem: 'Erro ao listar agendamentos.' });
     }
 };
 
-    exports.buscarAgendamentos = async (req, res) => {
-        try {
-        const agendamentos = await Agendamento.find().populate('clienteId profissionalId', 'nome email');
-        res.json(agendamentos);
-        } catch (error) {
-        console.error("Erro ao buscar agendamentos:", error);
-        res.status(500).json({ mensagem: "Erro ao buscar agendamentos" });
-        }
-    };
-        exports.excluirAgendamento = async (req, res) => {
-            try {
-            const { id } = req.params;
-            await Agendamento.findByIdAndDelete(id);
-            res.json({ mensagem: "Agendamento excluído com sucesso" });
-            } catch (error) {
-            console.error("Erro ao excluir agendamento:", error);
-            res.status(500).json({ mensagem: "Erro ao excluir agendamento" });
-            }
-        };
+// Função para listar os agendamentos do profissional logado
+const listarAgendamentosDoProfissional = async (req, res) => {
+    try {
+        const profissionalId = req.usuarioId;
+
+        const agendamentos = await Agendamento.find({ profissional: profissionalId })
+            .populate('cliente', 'nome')
+            .sort({ data: 1, hora: 1 });
+
+        const lista = agendamentos.map(agendamento => ({
+            _id: agendamento._id,
+            clienteNome: agendamento.cliente ? agendamento.cliente.nome : 'Cliente não encontrado',
+            servico: agendamento.servico,
+            data: new Date(agendamento.data).toLocaleDateString(),
+            hora: agendamento.hora
+        }));
+
+        res.json(lista);
+    } catch (error) {
+        console.error('Erro ao listar agendamentos do profissional:', error);
+        res.status(500).json({ mensagem: 'Erro ao listar agendamentos.' });
+    }
+};
+
+module.exports = {
+    criarAgendamento,
+    listarMeusAgendamentos,
+    listarAgendamentosDoProfissional
+};

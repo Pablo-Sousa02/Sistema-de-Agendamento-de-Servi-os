@@ -1,28 +1,31 @@
-const mongoose = require('mongoose');
+    // models/Agendamento.js
+    const mongoose = require('mongoose');
 
-const AgendamentoSchema = new mongoose.Schema({
-    clienteId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Usuario', 
-        required: true 
+    const AgendamentoSchema = new mongoose.Schema({
+    cliente: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuario',
+        required: true
     },
-    profissionalId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Usuario', 
-        required: true 
+    profissional: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuario',
+        required: true
     },
-    data: { 
-        type: Date,  // Alterado para Date em vez de String
-        required: true 
+    servico: {
+        type: String,
+        required: true
     },
-    hora: { 
-        type: String, 
-        required: true 
+    data: {
+        type: Date,
+        required: true
     },
-    servico: { 
-        type: String, 
-        required: true 
-    }
-});
+    hora: {
+        type: String,
+        required: true
+    },
+    }, {
+    timestamps: true
+    });
 
-module.exports = mongoose.model('Agendamento', AgendamentoSchema);
+    module.exports = mongoose.model('Agendamentos', AgendamentoSchema);

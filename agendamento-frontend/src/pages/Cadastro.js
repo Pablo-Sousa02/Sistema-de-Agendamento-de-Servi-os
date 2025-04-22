@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Form, Button, Container, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
+import api from '../services/api'; // Importando o arquivo api.js
 
 function Cadastro() {
   const [nome, setNome] = useState('');
@@ -14,13 +13,17 @@ function Cadastro() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/usuarios/cadastrar', { nome, email, senha, tipo });
+      await api.post('/usuarios/cadastrar', { nome, email, senha, tipo });
 
       alert('Cadastro realizado com sucesso!');
       navigate('/login');
     } catch (error) {
-      alert('Erro ao cadastrar');
+      alert('Erro ao cadastrar: ' + error.message); // Exibe o erro retornado
     }
+  };
+
+  const handleRedirectToLogin = () => {
+    navigate('/login');
   };
 
   return (
@@ -49,10 +52,16 @@ function Cadastro() {
           </Form.Group>
           <Button type="submit" variant="success" className="w-100">Cadastrar</Button>
         </Form>
+
+        {/* Botão para redirecionar para a página de login */}
+        <div className="mt-3 text-center">
+          <Button variant="link" onClick={handleRedirectToLogin}>
+            Já tem uma conta? Faça login aqui.
+          </Button>
+        </div>
       </Card>
     </Container>
   );
 }
 
 export default Cadastro;
-// Compare this snippet from agendamento-frontend/src/services/api.js:

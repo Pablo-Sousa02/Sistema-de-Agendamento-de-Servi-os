@@ -1,91 +1,197 @@
-    import { useState, useEffect } from 'react';
-    import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
-    import api from '../services/api';
+import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Card, Button, Spinner, Alert, Modal, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import api from '../services/api';
+import { jwtDecode } from 'jwt-decode';
 
-    function Agendamentos() {
+function Agendamentos() {
+    const navigate = useNavigate();
     const [profissionais, setProfissionais] = useState([]);
-    const [servico, setServico] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [erro, setErro] = useState(null);
+
+    const [showModal, setShowModal] = useState(false);
+    const [selectedProfissional, setSelectedProfissional] = useState(null);
     const [data, setData] = useState('');
     const [hora, setHora] = useState('');
-    const [profissionalSelecionado, setProfissionalSelecionado] = useState(null);
+    const [dia, setDia] = useState('');
+    const [servico, setServico] = useState('');
+
+    const [sucessoAgendamento, setSucessoAgendamento] = useState(false);
 
     useEffect(() => {
-        async function carregarProfissionais() {
-        try {
-            const { data } = await api.get('/usuarios/profissionais');
-            setProfissionais(data);
-        } catch (error) {
-            console.error('Erro ao buscar profissionais:', error);
-        }
-        }
-        carregarProfissionais();
+        const fetchProfissionais = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await api.get('/usuarios/profissionais', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setProfissionais(response.data);
+            } catch (error) {
+                console.error('Erro ao buscar profissionais:', error);
+                setErro('Erro ao carregar profissionais. Faça login novamente.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfissionais();
     }, []);
 
-    async function handleAgendar() {
-        if (!profissionalSelecionado || !servico || !data || !hora) {
-        alert('Preencha todos os campos!');
-        return;
-        }
-        try {
-        await api.post('/agendamentos/cadastrar', {
-            profissionalId: profissionalSelecionado._id,
-            servico,
-            data,
-            hora
-        }, {
-            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-        alert('Agendamento realizado!');
-        setServico('');
+    const handleAgendar = (profissional) => {
+        setSelectedProfissional(profissional);
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
         setData('');
         setHora('');
-        setProfissionalSelecionado(null);
+        setDia('');
+        setServico('');
+    };
+
+    const handleConfirmarAgendamento = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const decodedToken = jwtDecode(token);  // Decodificando o token para obter o ID do cliente
+            const clienteId = decodedToken.id;
+    
+            const response = await api.post(
+                '/agendamentos',
+                {
+                    cliente: clienteId,  // Usando o ID do cliente do token
+                    profissional: selectedProfissional._id,
+                    servico,
+                    data,
+                    hora,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log('Agendamento confirmado:', response.data);
+            setSucessoAgendamento(true);
+            setTimeout(() => setSucessoAgendamento(false), 3000);  // Mensagem desaparece após 3 segundos
+            handleCloseModal();
         } catch (error) {
-        alert('Erro ao agendar!');
+            console.error('Erro ao agendar:', error);
         }
+    };
+
+    if (loading) {
+        return (
+            <Container className="d-flex justify-content-center align-items-center vh-100">
+                <Spinner animation="border" variant="primary" />
+            </Container>
+        );
+    }
+
+    if (erro) {
+        return (
+            <Container className="mt-5">
+                <Alert variant="danger" className="text-center">{erro}</Alert>
+            </Container>
+        );
+    }
+
+    if (profissionais.length === 0) {
+        return (
+            <Container className="mt-5 text-center">
+                <h3 className="mb-3">Nenhum profissional disponível no momento.</h3>
+                <Button variant="primary" onClick={() => navigate('/')}>Voltar para o início</Button>
+            </Container>
+        );
     }
 
     return (
-        <Container className="mt-5">
-        <h2 className="text-center mb-4">Escolha um profissional</h2>
-        <Row>
-            {profissionais.length === 0 ? (
-            <p className="text-center">Nenhum profissional disponível no momento.</p>
-            ) : (
-            profissionais.map((p) => (
-                <Col md={4} key={p._id} className="mb-3">
-                <Card onClick={() => setProfissionalSelecionado(p)} style={{ cursor: 'pointer' }}>
-                    <Card.Body>
-                    <Card.Title>{p.nome}</Card.Title>
-                    <Card.Text>Especialidade: {p.especialidade || 'Não informado'}</Card.Text>
-                    </Card.Body>
-                </Card>
-                </Col>
-            ))
-            )}
-        </Row>
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -30 }}
+            transition={{ duration: 0.4 }}
+        >
+            <Container className="mt-5">
+                {sucessoAgendamento && (
+                    <Alert variant="success" className="text-center">
+                        Agendamento realizado com sucesso!
+                    </Alert>
+                )}
+                <h2 className="text-center mb-4">Escolha um Profissional para Agendar</h2>
+                <Row className="g-4">
+                    {profissionais.map((profissional) => (
+                        <Col key={profissional._id} xs={12} md={6} lg={4}>
+                            <Card className="h-100 shadow-sm">
+                                <Card.Body className="d-flex flex-column">
+                                    <Card.Title className="text-primary">{profissional.nome}</Card.Title>
+                                    <Card.Text>Email: {profissional.email}</Card.Text>
+                                    <Button
+                                        variant="success"
+                                        className="mt-auto"
+                                        onClick={() => handleAgendar(profissional)}
+                                    >
+                                        Agendar com {profissional.nome}
+                                    </Button>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
 
-        {profissionalSelecionado && (
-            <Form className="mt-4">
-            <h4>Agendar com {profissionalSelecionado.nome}</h4>
-            <Form.Group className="mb-2">
-                <Form.Label>Serviço</Form.Label>
-                <Form.Control value={servico} onChange={e => setServico(e.target.value)} />
-            </Form.Group>
-            <Form.Group className="mb-2">
-                <Form.Label>Data</Form.Label>
-                <Form.Control type="date" value={data} onChange={e => setData(e.target.value)} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-                <Form.Label>Hora</Form.Label>
-                <Form.Control type="time" value={hora} onChange={e => setHora(e.target.value)} />
-            </Form.Group>
-            <Button onClick={handleAgendar}>Confirmar Agendamento</Button>
-            </Form>
-        )}
-        </Container>
+                <Modal show={showModal} onHide={handleCloseModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Agendar com {selectedProfissional?.nome}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Data</Form.Label>
+                                <Form.Control
+                                    type="date"
+                                    value={data}
+                                    onChange={(e) => setData(e.target.value)}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Hora</Form.Label>
+                                <Form.Control
+                                    type="time"
+                                    value={hora}
+                                    onChange={(e) => setHora(e.target.value)}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Dia</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={dia}
+                                    onChange={(e) => setDia(e.target.value)}
+                                    placeholder="Exemplo: Segunda-feira"
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Serviço</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    value={servico}
+                                    onChange={(e) => setServico(e.target.value)}
+                                    placeholder="Descrição do serviço"
+                                />
+                            </Form.Group>
+                            <Button variant="primary" onClick={handleConfirmarAgendamento}>
+                                Confirmar Agendamento
+                            </Button>
+                        </Form>
+                    </Modal.Body>
+                </Modal>
+            </Container>
+        </motion.div>
     );
-    }
+}
 
-    export default Agendamentos;
-    // Compare this snippet from agendamento-frontend/src/components/ModalConfirmarSair.js:
+export default Agendamentos;

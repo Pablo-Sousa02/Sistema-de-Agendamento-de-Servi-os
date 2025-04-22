@@ -1,18 +1,13 @@
+// routes/agendamentoRoutes.js
 const express = require('express');
 const router = express.Router();
 const agendamentoController = require('../controllers/agendamentoController');
-const usuarioController = require('../controllers/usuarioController'); // <- Corrigido aqui
+const verificarToken = require('../middlewares/verificarToken'); // Caso haja verificação de token
 
-// Rota para cadastrar agendamento
-router.post('/cadastrar', agendamentoController.cadastrarAgendamento);
+// Definindo as rotas
+router.post('/', verificarToken, agendamentoController.criarAgendamento);
+router.get('/meus', verificarToken, agendamentoController.listarMeusAgendamentos);
+router.get('/profissional', verificarToken, agendamentoController.listarAgendamentosDoProfissional);
 
-// Rota para buscar todos os agendamentos
-router.get('/', agendamentoController.buscarAgendamentos);
-
-// Rota para excluir agendamento
-router.delete('/:id', agendamentoController.excluirAgendamento);
-
-// Rota para buscar agendamentos por profissional
-router.get('/profissionais', usuarioController.buscarProfissionais);
-
+// Exportando as rotas
 module.exports = router;
