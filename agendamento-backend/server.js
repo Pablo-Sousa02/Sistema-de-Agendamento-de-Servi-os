@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 // Middlewares
 app.use(cors({
-  origin: 'http://localhost:3000' // Altere para o endereço do seu frontend
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Isso usa a URL do front-end configurada no .env
 }));
 
 // Rotas

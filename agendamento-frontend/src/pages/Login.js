@@ -32,7 +32,7 @@ function Login() {
 
         try {
             const response = await axios.post(
-                'http://localhost:5000/api/usuarios/login',
+                `${process.env.REACT_APP_API_URL}/login`,
                 { email, senha },
                 { headers: { 'Content-Type': 'application/json' } }
             );
