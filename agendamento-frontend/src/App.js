@@ -8,6 +8,7 @@ import Cadastro from './pages/Cadastro';
 import Agendamentos from './pages/Agendamentos';
 import MeusAgendamentos from './pages/MeusAgendamentos';
 import EditarPerfil from './pages/EditarPerfil';
+import PerfilMenu from './pages/PerfilMenu';
 
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -92,6 +93,19 @@ function AnimatedRoutes() {
               transition={{ duration: 0.5 }}
             >
               <EditarPerfil />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/perfil-menu"
+          element={
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <PerfilMenu />
             </motion.div>
           }
         />

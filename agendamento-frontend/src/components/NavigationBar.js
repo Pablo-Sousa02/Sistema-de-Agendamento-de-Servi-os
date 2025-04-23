@@ -20,24 +20,27 @@
         <>
         <Navbar bg="dark" variant="dark" expand="lg">
             <Container>
-            <Navbar.Brand as={Link} to="/">Sistema de Agendamento</Navbar.Brand>
+            <Navbar.Brand as={Link} to="/">AgendaPro</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="ms-auto">
                 {usuario ? (
                     <>
-                    <Nav.Link as={Link} to="/">Home</Nav.Link>
+                    <Nav.Link as={Link} to="/">Início</Nav.Link>
                     {usuario.tipo === "cliente" && (
                         <Nav.Link as={Link} to="/agendamentos">Agendar</Nav.Link>
                     )}
                     {usuario.tipo === "profissional" && (
                         <Nav.Link as={Link} to="/meus-agendamentos">Meus Agendamentos</Nav.Link>
                     )}
+                    {usuario.tipo === "cliente" ||  (
+                        <Nav.Link as={Link} to="/editar-perfil">Meu Perfil</Nav.Link>
+                    )}
                     <Button variant="outline-danger" onClick={() => setShowModal(true)}>Sair</Button>
                     </>
                 ) : (
                     <>
-                    <Nav.Link as={Link} to="/">Home</Nav.Link>
+                    <Nav.Link as={Link} to="/">Início</Nav.Link>
                     </>
                 )}
                 </Nav>

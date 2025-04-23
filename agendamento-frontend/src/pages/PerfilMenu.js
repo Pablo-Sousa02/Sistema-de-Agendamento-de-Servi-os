@@ -1,10 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, } from 'react';
 import { Button, Dropdown, Modal } from 'react-bootstrap';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 
 const PerfilMenu = () => {
-    const { usuario, logout } = useContext(AuthContext);
+    const { usuario, logout } = useAuth();
     const [showConfirm, setShowConfirm] = useState(false); // Controla a exibição do modal de confirmação
 
     const handleConfirmDelete = async () => {

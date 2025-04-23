@@ -32,16 +32,16 @@ function Cadastro() {
         <h2 className="text-center mb-4">Cadastro</h2>
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Nome</Form.Label>
-            <Form.Control type="text" value={nome} onChange={e => setNome(e.target.value)} required />
+            <Form.Label>Nome</Form.Label >
+            <Form.Control type="text" value={nome} onChange={e => setNome(e.target.value)} required placeholder='Insira o nome de sua empresa' />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Email</Form.Label>
-            <Form.Control type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+            <Form.Control type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder='user@gmail.com'/>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Senha</Form.Label>
-            <Form.Control type="password" value={senha} onChange={e => setSenha(e.target.value)} required />
+            <Form.Control type="password" value={senha} onChange={e => setSenha(e.target.value)} required placeholder='Insira sua senha'/>
           </Form.Group>
           <Form.Group className="mb-4">
             <Form.Label>Tipo</Form.Label>
