@@ -138,7 +138,8 @@ const editarPerfil = async (req, res) => {
 // Função para verificar o usuário autenticado
 const verificarUsuario = async (req, res) => {
     try {
-        const usuario = await Usuario.findById(req.usuarioId);
+        // Alterado para pegar o ID do usuário a partir de req.user.id
+        const usuario = await Usuario.findById(req.user.id);  
         if (!usuario) {
             return res.status(400).json({ mensagem: "Usuário não encontrado" });
         }

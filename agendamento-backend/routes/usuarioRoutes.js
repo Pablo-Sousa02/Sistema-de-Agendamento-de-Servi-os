@@ -14,4 +14,5 @@ router.delete('/usuarios/:id', verificarToken, excluirPerfil);
 router.put('/usuarios/:id', verificarToken, editarPerfil);
 router.get('/usuarios/me', verificarToken, verificarUsuario);
 
+
 module.exports = router;

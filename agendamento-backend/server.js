@@ -3,6 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const chalk = require("chalk");
+const debugRoute = require('./routes/debugRoute');
+
 
 const app = express();
 app.use(express.json());
@@ -16,6 +18,9 @@ const usuarioRoutes = require("./routes/usuarioRoutes");
 const agendamentoRoutes = require("./routes/agendamentoRoutes"); // Adicione esta linha
 app.use("/api/usuarios", usuarioRoutes);
 app.use('/api/agendamentos', agendamentoRoutes); // Certifique-se de que as rotas de agendamento estão sendo usadas corretamente
+app.use('/api', debugRoute);
+
+
 
 // Conexão com o banco de dados e inicialização do servidor
 const PORT = process.env.PORT || 5000;

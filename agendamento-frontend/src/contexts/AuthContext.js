@@ -1,50 +1,34 @@
-  import { createContext, useContext, useState, useEffect } from 'react';
-  import axios from 'axios';
+import { createContext, useState, useContext,  } from 'react';
 
-  const AuthContext = createContext();
+const AuthContext = createContext();
 
-
-  export function useAuth() {
+export function useAuth() {
     return useContext(AuthContext);
-  }
+}
 
-  export function AuthProvider({ children }) {
-    const [usuario, setUsuario] = useState(null);
-    const [loading, setLoading] = useState(true);
-    
+export function AuthProvider({ children }) {
+    // Verifica se há um usuário salvo no localStorage ao iniciar
+    const [usuario, setUsuario] = useState(() => {
+        const savedUser = localStorage.getItem('usuario');
+        return savedUser ? JSON.parse(savedUser) : null;
+    });
 
-    useEffect(() => {
-      async function verificarUsuario() {
-        const token = localStorage.getItem('token');
-        if (token) {
-          try {
-            const response = await axios.get('/api/usuarios/me', {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-            setUsuario(response.data);
-          } catch (error) {
-            console.error('Não foi possível verificar o usuário', error);
-            localStorage.removeItem('token'); // apaga token inválido
-          }
-        }
-        setLoading(false);
-      }
-
-      verificarUsuario();
-    }, []);
-
-    const login = (dadosUsuario) => {
-      setUsuario(dadosUsuario);
+    const login = (usuarioData) => {
+        setUsuario(usuarioData);
+        localStorage.setItem('usuario', JSON.stringify(usuarioData));  // Salva o usuário no localStorage
     };
 
     const logout = () => {
-      localStorage.removeItem('token');
-      setUsuario(null);
+        setUsuario(null);
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('token');
     };
 
-    return (
-      <AuthContext.Provider value={{ usuario, login, logout }}>
-        {!loading && children}
-      </AuthContext.Provider>
-    );
-  }
+    const value = {
+        usuario,
+        login,
+        logout,
+    };
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
