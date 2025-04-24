@@ -19,7 +19,7 @@ const allowedOrigins = [
   'http://localhost:3000',  // Desenvolvimento local
   'https://sistema-de-agendamento-de-servicos.vercel.app', // Produção Vercel
   'https://sistema-de-agendamento-de-servicos.onrender.com',
-  '*' 
+
 ];
 
 app.use(cors({
