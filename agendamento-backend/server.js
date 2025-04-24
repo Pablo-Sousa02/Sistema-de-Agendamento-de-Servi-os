@@ -18,21 +18,20 @@ app.use(express.json());
 const allowedOrigins = [
   'http://localhost:3000',  // Desenvolvimento local
   'https://sistema-de-agendamento-de-servicos.vercel.app', // Produção Vercel
-  'https://sistema-de-agendamento-de-servicos.onrender.com',
-  '*'  // Permite todas as origens para testar
+  'https://sistema-de-agendamento-de-servicos.onrender.com', // URL do backend no Render
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
+      callback(null, true);  // Permite a origem
     } else {
-      callback(new Error('Not allowed by CORS: ' + origin));
+      callback(new Error('Not allowed by CORS: ' + origin));  // Bloqueia origens não permitidas
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true,  // Permite credenciais como cookies ou tokens
 }));
 
 // Rotas

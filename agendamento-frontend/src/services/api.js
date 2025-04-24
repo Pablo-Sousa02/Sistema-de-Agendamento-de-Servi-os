@@ -5,12 +5,13 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,  // Isso permite enviar cookies (se estiver usando) ou tokens
 });
 
 // Interceptador para adicionar o token automaticamente
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken'); // Token armazenado
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
