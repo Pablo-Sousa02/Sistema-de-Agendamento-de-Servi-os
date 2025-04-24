@@ -88,7 +88,7 @@ function MeusAgendamentos() {
                                             <img
                                                 src={a.clienteFotoPerfil}
                                                 alt="Foto do cliente"
-                                                style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                                                style={{ width: '80px', height: '80px', borderRadius: '50%' }}
                                             />
                                         ) : (
                                             <span>Sem foto</span>

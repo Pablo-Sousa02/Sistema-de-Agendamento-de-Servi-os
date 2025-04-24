@@ -157,7 +157,7 @@ function Agendamentos() {
                                 <Card.Body className="d-flex flex-column">
                                     <div className="d-flex justify-content-center mb-3">
                                         <Image
-                                            src={`http://localhost:5000/uploads/${profissional.fotoPerfil || 'default.png'}`}
+                                            src={`${process.env.REACT_APP_API_URL}/uploads/${fotoPerfil}`}
                                             style={{ width: "100px", height: "100px", objectFit: "cover" }}
                                             roundedCircle
                                         />

@@ -44,7 +44,7 @@ function NavigationBar() {
                                     <Nav.Link as={Link} to="/">Início</Nav.Link>
                                     <Nav.Link className="d-flex align-items-center" onClick={() => setShowProfileModal(true)}>
                                         <Image
-                                            src={usuario?.fotoPerfil ? `http://localhost:5000/uploads/${usuario.fotoPerfil}` : '/default-avatar.png'} // Foto de perfil ou avatar padrão
+                                            src={usuario?.fotoPerfil ? `${process.env.REACT_APP_API_URL}/uploads/${fotoPerfil}` : '/default-avatar.png'} // Foto de perfil ou avatar padrão
                                             alt="Foto de Perfil"
                                             roundedCircle
                                             style={{ width: '30px', height: '30px', objectFit: 'cover' }}

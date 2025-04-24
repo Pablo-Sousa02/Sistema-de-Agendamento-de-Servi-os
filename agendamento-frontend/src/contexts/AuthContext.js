@@ -16,6 +16,7 @@ export function AuthProvider({ children }) {
         setUsuario(usuarioData);
         localStorage.setItem('usuario', JSON.stringify(usuarioData));  // Salva todos os dados do usuário, incluindo foto
         localStorage.setItem('token', token);
+        localStorage.setItem('fotoPerfil', usuarioData.fotoPerfil); // Salva a foto de perfil
     };
 
     const logout = () => {
