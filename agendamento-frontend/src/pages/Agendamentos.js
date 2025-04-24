@@ -39,11 +39,11 @@
             return;
         }
         try {
-            const response = await api.get("http://localhost:5000/api/usuarios/profissionais", {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            });
+            const response = await api.get(`${process.env.REACT_APP_API_URL}/api/usuarios/profissionais`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                });
             setProfissionais(response.data);
         } catch (error) {
             console.error("Erro ao buscar profissionais:", error);
