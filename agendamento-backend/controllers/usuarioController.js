@@ -5,9 +5,8 @@ const agendamentos = require('../routes/agendamentos');
 
 // Função para login
 const getFotoPerfilUrl = (fotoPerfil) => {
-    // URL de produção com HTTPS
     return `https://sistema-de-agendamento-de-servicos.onrender.com/uploads/${fotoPerfil}`;
-}
+};
 
 const login = async (req, res) => {
     const { email, senha } = req.body;
