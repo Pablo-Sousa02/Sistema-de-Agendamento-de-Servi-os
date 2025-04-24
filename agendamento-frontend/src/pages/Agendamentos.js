@@ -82,20 +82,21 @@
         const clienteId = decodedToken.id;
 
         const response = await api.post(
-            "http://localhost:5000/api/agendamentos", // A URL correta para criar agendamentos
+            "https://sistema-de-agendamento-de-servicos.onrender.com/api/agendamentos", // URL da API em produção
             {
-            cliente: clienteId, // Usando o ID do cliente do token
-            profissional: selectedProfissional._id,
-            servico,
-            data,
-            hora,
+                cliente: clienteId, // Usando o ID do cliente do token
+                profissional: selectedProfissional._id,
+                servico,
+                data,
+                hora,
             },
             {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             }
         );
+        
         console.log("Agendamento confirmado:", response.data);
         setSucessoAgendamento(true);
         setTimeout(() => setSucessoAgendamento(false), 3000); // Mensagem desaparece após 3 segundos
