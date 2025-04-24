@@ -10,19 +10,22 @@ const UsuarioSchema = new mongoose.Schema({
     unique: true, 
     validate: {
       validator: function (v) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); // Validação de email
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
       },
       message: props => `${props.value} não é um email válido!`
     }
   },
   senha: { type: String, required: true },
+
+  fotoPerfil: {
+    type: String,
+    default: 'default.png', // Nome do arquivo padrão
+  }
 });
 
-// Antes de salvar o usuário, criptografar a senha
+// Criptografando a senha antes de salvar
 UsuarioSchema.pre('save', async function (next) {
-  if (!this.isModified('senha')) {
-    return next(); // Não criptografa se a senha não foi modificada
-  }
+  if (!this.isModified('senha')) return next();
   try {
     const salt = await bcrypt.genSalt(10);
     this.senha = await bcrypt.hash(this.senha, salt);
@@ -34,18 +37,12 @@ UsuarioSchema.pre('save', async function (next) {
   }
 });
 
-// Método para comparar senha
+// Método para comparar a senha
 UsuarioSchema.methods.compararSenha = async function (senhaDigitada) {
   try {
-    console.log("Senha armazenada: ", this.senha);  // Imprime a senha criptografada no banco
-    console.log("Senha recebida para comparar: ", senhaDigitada); // Imprime a senha digitada
-
     const resultado = await bcrypt.compare(senhaDigitada, this.senha);
-    console.log("Resultado da comparação:", resultado); // Imprime o resultado da comparação
-
     return resultado;
   } catch (err) {
-    console.error("Erro ao comparar a senha:", err.message);
     throw err;
   }
 };

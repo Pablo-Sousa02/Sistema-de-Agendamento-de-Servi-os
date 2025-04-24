@@ -3,6 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const chalk = require("chalk");
 const cors = require("cors");
+const path = require('path');
+const multer = require('multer');
 
 // Rotas
 const usuarioRoutes = require("./routes/usuarioRoutes");
@@ -19,7 +21,6 @@ const allowedOrigins = [
   'http://localhost:3000',  // Desenvolvimento local
   'https://sistema-de-agendamento-de-servicos.vercel.app', // Produção Vercel
   'https://sistema-de-agendamento-de-servicos.onrender.com',
-
 ];
 
 app.use(cors({
@@ -35,10 +36,12 @@ app.use(cors({
   credentials: true,  // Permite credenciais como cookies ou tokens
 }));
 
+
 // Rotas
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/agendamentos", agendamentoRoutes);
 app.use("/api", debugRoute);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Conexão com MongoDB
 const PORT = process.env.PORT || 5000;
