@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const verificarToken = (req, res, next) => {
-    // Primeiro, tentar pegar o token da header Authorization
-    const token = req.headers['authorization']?.split(' ')[1];  // Pega apenas a parte do token após "Bearer"
+    const token = req.headers['authorization']?.split(' ')[1]; // Espera "Bearer <token>"
 
     if (!token) {
         return res.status(401).json({ mensagem: "Token não fornecido" });
@@ -13,7 +12,7 @@ const verificarToken = (req, res, next) => {
             return res.status(401).json({ mensagem: "Token inválido" });
         }
 
-        req.usuarioId = decoded.id;  // Salva o id do usuário no request para uso posterior
+        req.user = { id: decoded.id, tipo: decoded.tipo }; // Salva como req.user (padrão mais comum)
         next();
     });
 };

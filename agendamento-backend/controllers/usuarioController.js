@@ -107,31 +107,30 @@ const excluirPerfil = async (req, res) => {
 
 // Função para editar perfil
 const editarPerfil = async (req, res) => {
-    const { id } = req.params;
-    const { nome, email, senha, fotoPerfil } = req.body;
-
     try {
-        const usuario = await Usuario.findById(id);
+        const usuario = await Usuario.findById(req.user.id); // usa o ID do token
         if (!usuario) {
-            return res.status(400).json({ mensagem: "Usuário não encontrado" });
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
         }
+
+        const { nome, email } = req.body;
 
         usuario.nome = nome || usuario.nome;
         usuario.email = email || usuario.email;
-        if (senha) {
-            usuario.senha = senha; // Criptografar a nova senha
-        }
-        if (fotoPerfil) {
-            usuario.fotoPerfil = fotoPerfil; // Atualiza a foto de perfil
+
+        // Se foi feito upload de nova foto
+        if (req.file) {
+            usuario.fotoPerfil = req.file.filename;
         }
 
         await usuario.save();
+
         res.status(200).json({
             mensagem: "Perfil atualizado com sucesso",
             usuario: {
                 nome: usuario.nome,
                 email: usuario.email,
-                fotoPerfil: getFotoPerfilUrl(usuario.fotoPerfil), // Retorna a URL correta da foto
+                fotoPerfil: usuario.fotoPerfil, // envia o nome do arquivo apenas
             }
         });
     } catch (error) {

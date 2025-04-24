@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const chalk = require("chalk");
 const cors = require("cors");
 const path = require('path');
-const multer = require('multer');
+
 
 // Rotas
 const usuarioRoutes = require("./routes/usuarioRoutes");

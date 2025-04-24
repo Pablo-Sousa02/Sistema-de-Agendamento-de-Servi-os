@@ -71,6 +71,7 @@ function EditarPerfil() {
                 <div className="d-flex justify-content-center mb-4">
                     <Image
                         src={fotoPerfil ? `${process.env.REACT_APP_API_URL}/uploads/${fotoPerfil}` : '/default-avatar.png'}
+
                         roundedCircle
                         style={{ width: '120px', height: '120px', objectFit: 'cover' }}
                     />
