@@ -16,8 +16,9 @@ app.use(express.json());
 
 // Configuração de CORS
 const allowedOrigins = [
-  'http://localhost:3000',  // Origem para desenvolvimento
-  'https://sistema-de-agendamento-de-servicos.vercel.app' // URL de produção
+  'http://localhost:3000',  // Desenvolvimento local
+  'https://sistema-de-agendamento-de-servicos.vercel.app', // Produção Vercel
+  '*'  // Permite todas as origens para testar
 ];
 
 app.use(cors({
