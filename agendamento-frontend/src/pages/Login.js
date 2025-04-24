@@ -1,116 +1,82 @@
-import { useState } from 'react';
-import { Form, Button, Container, Alert, Spinner } from 'react-bootstrap';
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { motion } from 'framer-motion';
+    import { useState } from 'react';
+    import { Form, Button, Container, Card } from 'react-bootstrap';
+    import { useNavigate } from 'react-router-dom';
+    import axios from 'axios';
+    import { useAuth } from '../contexts/AuthContext';
 
-function Login() {
-    const { login } = useAuth();
-    const navigate = useNavigate();
+    function Login() {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [erro, setErro] = useState('');
+    const [sucesso, setSucesso] = useState('');
+    const navigate = useNavigate();
+    const { login } = useAuth();  // Usando o contexto para login
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null);
-
-        if (!email || !senha) {
-            setError("Preencha todos os campos!");
-            return;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            setError("Digite um email válido!");
-            return;
-        }
-
-        setLoading(true);
-
+        
         try {
-            const response = await axios.post(
-                `${process.env.REACT_APP_API_URL}/login`,
-                { email, senha },
-                { headers: { 'Content-Type': 'application/json' } }
-            );
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/usuarios/login`, { email, senha });
+        console.log('Login bem-sucedido:', response);
+        
+        // Armazenar o token ou outro dado do login, se necessário
+        const usuarioData = response.data.usuario; // Aqui, você deve ajustar de acordo com a resposta da API
+        const token = response.data.token; // Supondo que a API retorne um token
 
-            // Verifique se a resposta foi recebida corretamente
-            console.log('Resposta da API:', response);
+        localStorage.setItem('authToken', token);  // Exemplo de armazenar o token
+        login(usuarioData, token); // Salva o usuário no contexto e no localStorage
 
-            const { token, usuario } = response.data;
-
-            // Exibindo o token no console
-            console.log('Token:', token);
-
-            localStorage.setItem('token', token);  // Salvando o token no localStorage
-            login(usuario);  // Salvando o usuário no contexto
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;  // Configura o axios para usar o token nas futuras requisições
-
-            navigate('/');  // Redireciona para a página inicial
+        setSucesso('Login realizado com sucesso!'); // Mensagem de sucesso
+        setTimeout(() => {
+            navigate('/');  // Redireciona para a página inicial após o login
+        }, 2000);  // Tempo para mostrar a mensagem antes de redirecionar
         } catch (error) {
-            console.error('Erro ao fazer login:', error);
-            if (error.response && error.response.status === 400) {
-                setError('Email ou senha incorretos!');
-            } else {
-                setError('Erro no servidor. Tente novamente mais tarde.');
-            }
-        } finally {
-            setLoading(false);
+        console.error('Erro ao fazer login:', error);
+        setErro('Erro ao fazer login: ' + error.message); // Exibe o erro retornado
         }
     };
 
     return (
-        <Container className="mt-5" style={{ maxWidth: '400px' }}>
+        <Container className="d-flex justify-content-center align-items-center vh-100">
+        <Card className="p-4 shadow" style={{ width: '24rem' }}>
             <h2 className="text-center mb-4">Login</h2>
-            {error && <Alert variant="danger">{error}</Alert>}
-            <Form onSubmit={handleLogin}>
-                <Form.Group className="mb-3">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Digite seu email"
-                    />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                    <Form.Label>Senha</Form.Label>
-                    <Form.Control
-                        type="password"
-                        value={senha}
-                        onChange={(e) => setSenha(e.target.value)}
-                        placeholder="Digite sua senha"
-                    />
-                </Form.Group>
-
-                <div className="d-grid">
-                    <Button variant="primary" type="submit" disabled={loading}>
-                        {loading ? (
-                            <Spinner animation="border" size="sm" />
-                        ) : (
-                            'Entrar'
-                        )}
-                    </Button>
-                </div>
+            {sucesso && <div className="alert alert-success">{sucesso}</div>}  {/* Mensagem de sucesso */}
+            {erro && <div className="alert alert-danger">{erro}</div>}  {/* Mensagem de erro */}
+            <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="user@gmail.com"
+                />
+            </Form.Group>
+            <Form.Group className="mb-3">
+                <Form.Label>Senha</Form.Label>
+                <Form.Control
+                type="password"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                required
+                placeholder="Insira sua senha"
+                />
+            </Form.Group>
+            <Button type="submit" variant="success" className="w-100">
+                Login
+            </Button>
             </Form>
 
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-            >
-                <p className="text-center mt-3">
-                    Não tem uma conta?{' '}
-                    <a href="/cadastro">Cadastre-se aqui</a>
-                </p>
-            </motion.div>
+            {/* Botão para redirecionar para a página de cadastro */}
+            <div className="mt-3 text-center">
+            <Button variant="link" onClick={() => navigate('/cadastro')}>
+                Não tem uma conta? Cadastre-se aqui.
+            </Button>
+            </div>
+        </Card>
         </Container>
     );
-}
+    }
 
-export default Login;
+    export default Login;

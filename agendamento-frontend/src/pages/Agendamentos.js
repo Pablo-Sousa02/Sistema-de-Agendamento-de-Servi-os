@@ -32,14 +32,14 @@
 
     useEffect(() => {
         const fetchProfissionais = async () => {
-        // Verifique se há token antes de fazer a requisição
         const token = localStorage.getItem("token");
 
         if (!token) {
             navigate("/login"); // Redireciona para o login se não estiver logado
+            return;
         }
         try {
-            const response = await api.get("/usuarios/profissionais", {
+            const response = await api.get("http://localhost:5000/api/usuarios/profissionais", {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -82,7 +82,7 @@
         const clienteId = decodedToken.id;
 
         const response = await api.post(
-            "/agendamentos",
+            "http://localhost:5000/api/agendamentos", // A URL correta para criar agendamentos
             {
             cliente: clienteId, // Usando o ID do cliente do token
             profissional: selectedProfissional._id,
@@ -147,9 +147,7 @@
                 Agendamento realizado com sucesso!
             </Alert>
             )}
-            <h2 className="text-center mb-4">
-            Escolha um Profissional para Agendar
-            </h2>
+            <h2 className="text-center mb-4">Escolha um Profissional para Agendar</h2>
             <Row className="g-4">
             {profissionais.map((profissional) => (
                 <Col key={profissional._id} xs={12} md={6} lg={4}>

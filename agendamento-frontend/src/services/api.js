@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://agendamento-backend.onrender.com/api',  // Ajuste para o URL completo
+  baseURL: process.env.REACT_APP_API_URL, // A URL do backend a partir do .env
   headers: {
     'Content-Type': 'application/json',
   },

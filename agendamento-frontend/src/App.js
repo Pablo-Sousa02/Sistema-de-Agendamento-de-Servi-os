@@ -11,6 +11,7 @@ import EditarPerfil from './pages/EditarPerfil';
 import PerfilMenu from './pages/PerfilMenu';
 
 import { AnimatePresence, motion } from 'framer-motion';
+import PrivateRoute from './components/PrivateRoute';  // Importando a PrivateRoute
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -57,56 +58,65 @@ function AnimatedRoutes() {
             </motion.div>
           }
         />
+        {/* Protegendo as rotas abaixo */}
         <Route
           path="/agendamentos"
           element={
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Agendamentos />
-            </motion.div>
+            <PrivateRoute>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Agendamentos />
+              </motion.div>
+            </PrivateRoute>
           }
         />
         <Route
           path="/meus-agendamentos"
           element={
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <MeusAgendamentos />
-            </motion.div>
+            <PrivateRoute>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <MeusAgendamentos />
+              </motion.div>
+            </PrivateRoute>
           }
         />
         <Route
           path="/editar-perfil"
           element={
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <EditarPerfil />
-            </motion.div>
+            <PrivateRoute>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <EditarPerfil />
+              </motion.div>
+            </PrivateRoute>
           }
         />
         <Route
           path="/perfil-menu"
           element={
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <PerfilMenu />
-            </motion.div>
+            <PrivateRoute>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <PerfilMenu />
+              </motion.div>
+            </PrivateRoute>
           }
         />
       </Routes>

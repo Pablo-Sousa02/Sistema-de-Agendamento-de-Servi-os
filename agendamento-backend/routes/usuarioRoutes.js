@@ -9,7 +9,7 @@ router.post('/login', login);
 
 // Rotas protegidas
 router.get('/usuarios', verificarToken, listarUsuarios);
-router.get('/profissionais', verificarToken, buscarProfissionais);
+router.get('/profissionais', buscarProfissionais);
 router.delete('/usuarios/:id', verificarToken, excluirPerfil);
 router.put('/usuarios/:id', verificarToken, editarPerfil);
 router.get('/usuarios/me', verificarToken, verificarUsuario);

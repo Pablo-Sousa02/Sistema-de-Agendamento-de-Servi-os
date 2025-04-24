@@ -10,7 +10,7 @@ function MeusAgendamentos() {
     useEffect(() => {
         async function carregarAgendamentos() {
             try {
-                const { data } = await api.get('/agendamentos/profissional', {
+                const { data } = await api.get('/api/agendamentos/profissional', {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`
                     }

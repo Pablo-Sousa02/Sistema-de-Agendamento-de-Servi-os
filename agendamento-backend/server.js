@@ -1,31 +1,46 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
 const chalk = require("chalk");
-const debugRoute = require('./routes/debugRoute');
-
-
-const app = express();
-app.use(express.json());
-// Middlewares
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Isso usa a URL do front-end configurada no .env
-}));
+const cors = require("cors");
 
 // Rotas
 const usuarioRoutes = require("./routes/usuarioRoutes");
-const agendamentoRoutes = require("./routes/agendamentoRoutes"); // Adicione esta linha
+const agendamentoRoutes = require("./routes/agendamentoRoutes");
+const debugRoute = require("./routes/debugRoute");
+
+const app = express();
+
+// Middleware JSON
+app.use(express.json());
+
+// Configuração de CORS
+const allowedOrigins = [
+  'http://localhost:3000',  // Origem para desenvolvimento
+  'https://sistema-de-agendamento-de-servicos.vercel.app' // URL de produção
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS: ' + origin));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+// Rotas
 app.use("/api/usuarios", usuarioRoutes);
-app.use('/api/agendamentos', agendamentoRoutes); // Certifique-se de que as rotas de agendamento estão sendo usadas corretamente
-app.use('/api', debugRoute);
+app.use("/api/agendamentos", agendamentoRoutes);
+app.use("/api", debugRoute);
 
-
-
-// Conexão com o banco de dados e inicialização do servidor
+// Conexão com MongoDB
 const PORT = process.env.PORT || 5000;
-mongoose
-  .connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log(chalk.green.bold("✅ Conectado ao MongoDB"));
     app.listen(PORT, () => {
@@ -33,5 +48,5 @@ mongoose
     });
   })
   .catch((err) => {
-    console.error(chalk.red.bold("❌ Erro de conexão com o MongoDB:"), err);
+    console.error(chalk.red.bold("❌ Erro ao conectar com MongoDB:"), err);
   });

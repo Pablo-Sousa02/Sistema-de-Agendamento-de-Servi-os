@@ -1,23 +1,26 @@
-import { createContext, useState, useContext,  } from 'react';
+    import { createContext, useState, useContext } from 'react';
 
-const AuthContext = createContext();
+    export const AuthContext = createContext();  // Exporte o AuthContext
 
-export function useAuth() {
+    export function useAuth() {
     return useContext(AuthContext);
-}
+    }
 
-export function AuthProvider({ children }) {
+    export function AuthProvider({ children }) {
     // Verifica se há um usuário salvo no localStorage ao iniciar
     const [usuario, setUsuario] = useState(() => {
         const savedUser = localStorage.getItem('usuario');
         return savedUser ? JSON.parse(savedUser) : null;
     });
 
-    const login = (usuarioData) => {
+    // Função para login
+    const login = (usuarioData, token) => {
         setUsuario(usuarioData);
         localStorage.setItem('usuario', JSON.stringify(usuarioData));  // Salva o usuário no localStorage
+        localStorage.setItem('token', token);  // Salva o token no localStorage
     };
 
+    // Função para logout
     const logout = () => {
         setUsuario(null);
         localStorage.removeItem('usuario');
@@ -31,4 +34,4 @@ export function AuthProvider({ children }) {
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+    }

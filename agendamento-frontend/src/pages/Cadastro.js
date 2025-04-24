@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Form, Button, Container, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api'; // Importando o arquivo api.js
+import axios from 'axios';
 
 function Cadastro() {
   const [nome, setNome] = useState('');
@@ -13,12 +13,13 @@ function Cadastro() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/usuarios/cadastrar', { nome, email, senha, tipo });
-
+      // Aguarde a resposta da requisição
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/usuarios/cadastrar`, { nome, email, senha, tipo });
       alert('Cadastro realizado com sucesso!');
       navigate('/login');
     } catch (error) {
-      alert('Erro ao cadastrar: ' + error.message); // Exibe o erro retornado
+      // Caso haja erro, exibe o erro
+      alert('Erro ao cadastrar: ' + error.message);
     }
   };
 
@@ -32,7 +33,7 @@ function Cadastro() {
         <h2 className="text-center mb-4">Cadastro</h2>
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Nome</Form.Label >
+            <Form.Label>Nome</Form.Label>
             <Form.Control type="text" value={nome} onChange={e => setNome(e.target.value)} required placeholder='Insira o nome de sua empresa' />
           </Form.Group>
           <Form.Group className="mb-3">

@@ -1,7 +1,7 @@
     import { motion } from 'framer-motion';
     import { Container, Button, Row, Col, Card } from 'react-bootstrap';
     import { useNavigate } from 'react-router-dom';
-    import { useAuth } from '../contexts/AuthContext';
+    import { useAuth } from '../contexts/AuthContext';  // Importando o contexto
     import homeImage from '../assets/agenda.svg';
     import homeImage2 from '../assets/agenda2.jpg';
 
@@ -28,10 +28,7 @@
                     transition={{ duration: 0.6 }}
                     >
                     <h2 className="mb-3 fw-bold text-primary">Olá, {usuario.nome} 👋</h2>
-                    <p className="lead mb-4"><strong>Estamos felizes em te ver por aqui! Aproveite para gerenciar seus agendamentos
-                        pelo menu de navegação.</strong></p>
-
-                    
+                    <p className="lead mb-4"><strong>Estamos felizes em te ver por aqui! Aproveite para gerenciar seus agendamentos pelo menu de navegação.</strong></p>
 
                     <img
                         src={homeImage2}
@@ -78,4 +75,4 @@
     );
     }
 
-export default Home;
+    export default Home;
