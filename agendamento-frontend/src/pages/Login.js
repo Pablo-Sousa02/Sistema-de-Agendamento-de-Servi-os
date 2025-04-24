@@ -22,7 +22,8 @@ function Login() {
 
             // Salva a foto de perfil junto com o usuário e o token
             localStorage.setItem('authToken', token);
-            localStorage.setItem('usuario', JSON.stringify(usuarioData));  // Salva o usuário no localStorage
+            localStorage.setItem('usuario', JSON.stringify(usuarioData));
+            localStorage.setItem('fotoPerfil', usuarioData.fotoPerfil);  // Salva a foto de perfil no localStorage
 
             login(usuarioData, token);  // Salva o usuário no contexto e no localStorage
 
