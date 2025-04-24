@@ -4,6 +4,11 @@ const { cadastrarAgendamento } = require('./agendamentoController');
 const agendamentos = require('../routes/agendamentos');
 
 // Função para login
+const getFotoPerfilUrl = (fotoPerfil) => {
+    // URL de produção com HTTPS
+    return `https://sistema-de-agendamento-de-servicos.onrender.com/uploads/${fotoPerfil}`;
+}
+
 const login = async (req, res) => {
     const { email, senha } = req.body;
 
@@ -122,7 +127,14 @@ const editarPerfil = async (req, res) => {
         }
 
         await usuario.save();
-        res.status(200).json({ mensagem: "Perfil atualizado com sucesso" });
+        res.status(200).json({
+            mensagem: "Perfil atualizado com sucesso",
+            usuario: {
+                nome: usuario.nome,
+                email: usuario.email,
+                fotoPerfil: getFotoPerfilUrl(usuario.fotoPerfil), // Retorna a URL correta da foto
+            }
+        });
     } catch (error) {
         console.error("Erro ao editar perfil:", error.message);
         res.status(500).json({ mensagem: "Erro ao editar perfil" });

@@ -13,12 +13,11 @@ function EditarPerfil() {
     const [loading, setLoading] = useState(false);
     const [mensagemSucesso, setMensagemSucesso] = useState(""); // Para armazenar a mensagem de sucesso
 
-    // Atualiza a foto de perfil se ela foi alterada
     const handleFotoChange = (e) => {
         setFoto(e.target.files[0]);
     };
 
-    // Atualiza o estado de fotoPerfil quando o componente for montado ou quando o usuário mudar
+    // Atualiza a foto de perfil quando o componente for montado ou quando o usuário mudar
     useEffect(() => {
         setFotoPerfil(usuario?.fotoPerfil || ""); // Atualiza a foto de perfil se o usuário for alterado
     }, [usuario]);
@@ -33,7 +32,7 @@ function EditarPerfil() {
             formData.append("email", email);
             if (foto) formData.append("foto", foto);
 
-            const response = await axios.put("http://localhost:5000/api/usuarios/perfil", formData, {
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/usuarios/perfil`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "multipart/form-data",
@@ -69,15 +68,13 @@ function EditarPerfil() {
                 <h2 className="text-center mb-4 text-primary">Editar Perfil</h2>
                 
                 {/* Exibição da foto de perfil atual ou selecionada */}
-
                 <div className="d-flex justify-content-center mb-4">
-                <Image
-                    src={fotoPerfil ? `${process.env.REACT_APP_API_URL}/uploads/${fotoPerfil}` : '/default-avatar.png'}
-                    roundedCircle
-                    className="mb-3"
-                    style={{ width: '120px', height: '120px', objectFit: 'cover' }}
-                />
-
+                    <Image
+                        src={fotoPerfil ? `${process.env.REACT_APP_API_URL}/uploads/${fotoPerfil}` : '/default-avatar.png'}
+                        alt="Foto de Perfil"
+                        roundedCircle
+                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                    />
                 </div>
 
                 {/* Exibição da mensagem de sucesso ou erro */}
