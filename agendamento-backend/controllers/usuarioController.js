@@ -7,40 +7,31 @@ const agendamentos = require('../routes/agendamentos');
 const login = async (req, res) => {
     const { email, senha } = req.body;
 
-    console.log('Email recebido:', email);
-    console.log('Senha recebida:', senha);
-
     try {
-        // Encontrar o usuário pelo email
         const usuario = await Usuario.findOne({ email });
         if (!usuario) {
             return res.status(400).json({ mensagem: "Usuário não encontrado" });
         }
 
-        // Comparar a senha recebida com a senha do usuário
         const senhaCorreta = await usuario.compararSenha(senha);
-        console.log("Senha comparada com sucesso:", senhaCorreta);
-
         if (!senhaCorreta) {
             return res.status(400).json({ mensagem: "Senha incorreta" });
         }
 
-        // Gerar o token JWT
         const token = jwt.sign(
             { id: usuario._id, tipo: usuario.tipo },
-            process.env.JWT_SECRET, // Certifique-se de que o JWT_SECRET está configurado no .env
-            { expiresIn: "1h" }  // O token expira em 1 hora
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
         );
 
-        // Retornar o token e informações do usuário
-        console.log('Token gerado:', token);
         return res.json({
             token,
             usuario: {
                 id: usuario._id,
                 nome: usuario.nome,
                 email: usuario.email,
-                tipo: usuario.tipo
+                tipo: usuario.tipo,
+                fotoPerfil: usuario.fotoPerfil,  // Inclua a foto de perfil aqui
             }
         });
     } catch (error) {
@@ -113,7 +104,7 @@ const excluirPerfil = async (req, res) => {
 // Função para editar perfil
 const editarPerfil = async (req, res) => {
     const { id } = req.params;
-    const { nome, email, senha } = req.body;
+    const { nome, email, senha, fotoPerfil } = req.body;
 
     try {
         const usuario = await Usuario.findById(id);
@@ -124,7 +115,10 @@ const editarPerfil = async (req, res) => {
         usuario.nome = nome || usuario.nome;
         usuario.email = email || usuario.email;
         if (senha) {
-            usuario.senha = senha; // o pre('save') vai criptografar a nova senha
+            usuario.senha = senha; // Criptografar a nova senha
+        }
+        if (fotoPerfil) {
+            usuario.fotoPerfil = fotoPerfil; // Atualiza a foto de perfil
         }
 
         await usuario.save();
