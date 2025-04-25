@@ -76,7 +76,7 @@ function Home() {
                                                         ) : (
                                                             <Button
                                                                 variant="outline-primary"
-                                                                onClick={() => navigate('/agendamentos')}
+                                                                onClick={() => navigate('/meus-agendamentos')}  
                                                                 className="w-100 mt-2"
                                                             >
                                                                 Ver Agendamentos
