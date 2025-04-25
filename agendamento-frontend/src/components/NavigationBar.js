@@ -33,9 +33,6 @@
                     {usuario.tipo === "profissional" && (
                         <Nav.Link as={Link} to="/meus-agendamentos">Meus Agendamentos</Nav.Link>
                     )}
-                    {usuario.tipo === "profissional" && (
-                        <Nav.Link as={Link} to="/editar-perfil">Meu Perfil</Nav.Link>
-                    )}
                     <Button variant="outline-danger" onClick={() => setShowModal(true)}>Sair</Button>
                     </>
                 ) : (

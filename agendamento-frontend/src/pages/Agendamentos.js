@@ -14,6 +14,7 @@
     import { motion } from "framer-motion";
     import api from "../services/api";
     import { jwtDecode } from "jwt-decode";
+    import { FaCalendarAlt } from "react-icons/fa"; // Ícone para agendamento
 
     function Agendamentos() {
     const navigate = useNavigate();
@@ -29,6 +30,7 @@
     const [servico, setServico] = useState("");
 
     const [sucessoAgendamento, setSucessoAgendamento] = useState(false);
+    const [loadingAgendamento, setLoadingAgendamento] = useState(false);
 
     useEffect(() => {
         const fetchProfissionais = async () => {
@@ -39,11 +41,14 @@
             return;
         }
         try {
-            const response = await api.get(`${process.env.REACT_APP_API_URL}/api/usuarios/profissionais`, {
+            const response = await api.get(
+            `${process.env.REACT_APP_API_URL}/api/usuarios/profissionais`,
+            {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
                 },
-                });
+            }
+            );
             setProfissionais(response.data);
         } catch (error) {
             console.error("Erro ao buscar profissionais:", error);
@@ -70,39 +75,48 @@
     };
 
     const handleConfirmarAgendamento = async () => {
+        if (!data || !hora || !dia || !servico) {
+        setErro("Todos os campos precisam ser preenchidos.");
+        return;
+        }
+
         const token = localStorage.getItem("token");
 
         if (!token) {
         setErro("Você precisa estar logado para agendar um serviço.");
-        return; // Não prosseguir sem o token
+        return;
         }
 
+        setLoadingAgendamento(true);
         try {
         const decodedToken = jwtDecode(token); // Decodificando o token para obter o ID do cliente
         const clienteId = decodedToken.id;
 
         const response = await api.post(
-            `${process.env.REACT_APP_API_URL}/api/agendamentos`, // URL da API em produção
+            `${process.env.REACT_APP_API_URL}/api/agendamentos`,
             {
-                cliente: clienteId, // Usando o ID do cliente do token
-                profissional: selectedProfissional._id,
-                servico,
-                data,
-                hora,
+            cliente: clienteId, // Usando o ID do cliente do token
+            profissional: selectedProfissional._id,
+            servico,
+            data,
+            hora,
             },
             {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
             }
         );
-        
+
         console.log("Agendamento confirmado:", response.data);
         setSucessoAgendamento(true);
         setTimeout(() => setSucessoAgendamento(false), 3000); // Mensagem desaparece após 3 segundos
         handleCloseModal();
         } catch (error) {
         console.error("Erro ao agendar:", error);
+        setErro("Erro ao confirmar o agendamento. Tente novamente.");
+        } finally {
+        setLoadingAgendamento(false);
         }
     };
 
@@ -148,22 +162,22 @@
                 Agendamento realizado com sucesso!
             </Alert>
             )}
-            <h2 className="text-center mb-4">Escolha um Profissional para Agendar</h2>
+            <h2 className="text-center mb-4 text-primary">Escolha um Profissional para Agendar</h2>
             <Row className="g-4">
             {profissionais.map((profissional) => (
                 <Col key={profissional._id} xs={12} md={6} lg={4}>
-                <Card className="h-100 shadow-sm">
+                <Card className="h-100 shadow-lg rounded-3">
                     <Card.Body className="d-flex flex-column">
-                    <Card.Title className="text-primary">
+                    <Card.Title className="text-success mb-3">
                         {profissional.nome}
                     </Card.Title>
                     <Card.Text>Email: {profissional.email}</Card.Text>
                     <Button
                         variant="success"
-                        className="mt-auto"
+                        className="mt-auto d-flex align-items-center justify-content-center"
                         onClick={() => handleAgendar(profissional)}
                     >
-                        Agendar com {profissional.nome}
+                        <FaCalendarAlt className="me-2" /> Agendar com {profissional.nome}
                     </Button>
                     </Card.Body>
                 </Card>
@@ -171,7 +185,7 @@
             ))}
             </Row>
 
-            <Modal show={showModal} onHide={handleCloseModal}>
+            <Modal show={showModal} onHide={handleCloseModal} centered>
             <Modal.Header closeButton>
                 <Modal.Title>Agendar com {selectedProfissional?.nome}</Modal.Title>
             </Modal.Header>
@@ -183,6 +197,7 @@
                     type="date"
                     value={data}
                     onChange={(e) => setData(e.target.value)}
+                    className="shadow-sm"
                     />
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -191,6 +206,7 @@
                     type="time"
                     value={hora}
                     onChange={(e) => setHora(e.target.value)}
+                    className="shadow-sm"
                     />
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -200,6 +216,7 @@
                     value={dia}
                     onChange={(e) => setDia(e.target.value)}
                     placeholder="Exemplo: Segunda-feira"
+                    className="shadow-sm"
                     />
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -209,10 +226,20 @@
                     value={servico}
                     onChange={(e) => setServico(e.target.value)}
                     placeholder="Descrição do serviço"
+                    className="shadow-sm"
                     />
                 </Form.Group>
-                <Button variant="primary" onClick={handleConfirmarAgendamento}>
-                    Confirmar Agendamento
+                <Button
+                    variant="success"
+                    onClick={handleConfirmarAgendamento}
+                    disabled={loadingAgendamento}
+                    className="w-100"
+                >
+                    {loadingAgendamento ? (
+                    <Spinner animation="border" size="sm" variant="light" />
+                    ) : (
+                    "Confirmar Agendamento"
+                    )}
                 </Button>
                 </Form>
             </Modal.Body>
