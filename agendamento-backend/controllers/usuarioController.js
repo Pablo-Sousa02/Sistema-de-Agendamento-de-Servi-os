@@ -4,38 +4,43 @@ const { cadastrarAgendamento } = require('./agendamentoController');
 const agendamentos = require('../routes/agendamentos');
 
 // Função para login
-const getFotoPerfilUrl = (fotoPerfil) => {
-    return `https://sistema-de-agendamento-de-servicos.onrender.com/uploads/${fotoPerfil}`;
-};
-
 const login = async (req, res) => {
     const { email, senha } = req.body;
 
+    console.log('Email recebido:', email);
+    console.log('Senha recebida:', senha);
+
     try {
+        // Encontrar o usuário pelo email
         const usuario = await Usuario.findOne({ email });
         if (!usuario) {
             return res.status(400).json({ mensagem: "Usuário não encontrado" });
         }
 
+        // Comparar a senha recebida com a senha do usuário
         const senhaCorreta = await usuario.compararSenha(senha);
+        console.log("Senha comparada com sucesso:", senhaCorreta);
+
         if (!senhaCorreta) {
             return res.status(400).json({ mensagem: "Senha incorreta" });
         }
 
+        // Gerar o token JWT
         const token = jwt.sign(
             { id: usuario._id, tipo: usuario.tipo },
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" }
+            process.env.JWT_SECRET, // Certifique-se de que o JWT_SECRET está configurado no .env
+            { expiresIn: "1h" }  // O token expira em 1 hora
         );
 
+        // Retornar o token e informações do usuário
+        console.log('Token gerado:', token);
         return res.json({
             token,
             usuario: {
                 id: usuario._id,
                 nome: usuario.nome,
                 email: usuario.email,
-                tipo: usuario.tipo,
-                fotoPerfil: usuario.fotoPerfil,  // Inclua a foto de perfil aqui
+                tipo: usuario.tipo
             }
         });
     } catch (error) {
@@ -107,32 +112,23 @@ const excluirPerfil = async (req, res) => {
 
 // Função para editar perfil
 const editarPerfil = async (req, res) => {
-    try {
-        const usuario = await Usuario.findById(req.user.id); // usa o ID do token
-        if (!usuario) {
-            return res.status(404).json({ mensagem: "Usuário não encontrado" });
-        }
+    const { id } = req.params;
+    const { nome, email, senha } = req.body;
 
-        const { nome, email } = req.body;
+    try {
+        const usuario = await Usuario.findById(id);
+        if (!usuario) {
+            return res.status(400).json({ mensagem: "Usuário não encontrado" });
+        }
 
         usuario.nome = nome || usuario.nome;
         usuario.email = email || usuario.email;
-
-        // Se foi feito upload de nova foto
-        if (req.file) {
-            usuario.fotoPerfil = req.file.filename;
+        if (senha) {
+            usuario.senha = senha; // o pre('save') vai criptografar a nova senha
         }
 
         await usuario.save();
-
-        res.status(200).json({
-            mensagem: "Perfil atualizado com sucesso",
-            usuario: {
-                nome: usuario.nome,
-                email: usuario.email,
-                fotoPerfil: usuario.fotoPerfil, // envia o nome do arquivo apenas
-            }
-        });
+        res.status(200).json({ mensagem: "Perfil atualizado com sucesso" });
     } catch (error) {
         console.error("Erro ao editar perfil:", error.message);
         res.status(500).json({ mensagem: "Erro ao editar perfil" });
