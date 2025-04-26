@@ -20,9 +20,13 @@
     const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setErro('');
+        setSucesso('');
         try {
         const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/usuarios/login`, { email, senha });
         const usuarioData = response.data.usuario;
@@ -38,6 +42,8 @@
         } catch (error) {
         console.error('Erro ao fazer login:', error);
         setErro('Erro ao fazer login: ' + error.message);
+        } finally {
+        setLoading(false);
         }
     };
 
@@ -75,7 +81,11 @@
                 </Form.Group>
 
                 <Button type="submit" variant="success" className="w-100">
-                Login
+                {loading ? (
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                ) : (
+                    'Entrar'
+                )}
                 </Button>
             </Form>
 
